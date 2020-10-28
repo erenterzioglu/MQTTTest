@@ -3,18 +3,20 @@
 #include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
 #include <DNSServer.h>
 #include <ESP8266WebServer.h>
+#include <ArduinoJson.h>          //https://github.com/bblanchon/ArduinoJson
+#include <PubSubClient.h>
+
 
 void setup() {
     WiFiManager wifiManager;
     // Uncomment and run it once, if you want to erase all the stored information
     //wifiManager.resetSettings();
-    //wifiManager.setConfigPortalTimeout(180);
+    wifiManager.setConfigPortalTimeout(180);
     
     if(!wifiManager.autoConnect("ESP-8266", "123456")) {
     Serial.println("failed to connect and hit timeout");
     //reset and try again, or maybe put it to deep sleep
     ESP.reset();
-    Serial.print("Test");
     delay(1000);
   } 
 
