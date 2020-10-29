@@ -8,7 +8,7 @@
 
 bool shouldSaveConfig = false;
 
-char mqtt_server[40] = " broker.emqx.io" ;
+char mqtt_server[40] = "broker.emqx.io" ;
 char mqtt_port[6] = "1883";
 char blynk_token[33] = " ";
 
@@ -16,6 +16,8 @@ WiFiClient espClient;
 PubSubClient client(espClient);
 
 void reconnect();
+void callback(char* topic, byte* payload, unsigned int length);
+
 //callback notifying us of the need to save config
 void saveConfigCallback () {
   Serial.println("Should save config");
@@ -26,7 +28,7 @@ void setup() {
   Serial.begin(9600);
   WiFiManager wifiManager;
 
-  configFileRead(mqtt_server, mqtt_port, blynk_token);
+  //configFileRead(mqtt_server, mqtt_port, blynk_token);
   // Uncomment and run it once, if you want to erase all the stored information
   //wifiManager.resetSettings();
   wifiManager.setConfigPortalTimeout(180);
@@ -56,11 +58,22 @@ void setup() {
   configFileWrite(mqtt_server,mqtt_port,blynk_token);
 
   //if you get here you have connected to the WiFi
-  Serial.println("connected...yeey :)");
+  Serial.println("connected...");
   
   //  client.setServer(mqtt_server, 12025);
   //const uint16_t mqtt_port_x = 12025; 
   client.setServer(mqtt_server, atoi(mqtt_port));
+  client.setCallback(callback);
+}
+
+void callback(char* topic, byte* payload, unsigned int length) {
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] ");
+  for (int i=0;i<length;i++) {
+    Serial.print((char)payload[i]);
+  }
+  Serial.println();
 }
 
 void reconnect() {
@@ -68,9 +81,8 @@ void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
     // Attempt to connect
-    // If you do not want to use a username and password, change next line to
-    // if (client.connect("ESP8266Client")) {
-    if (client.connect("ESP8266Client"/*, mqtt_user, mqtt_pass*/)) {
+   
+    if (client.connect("ESP8266Client")) {
       Serial.println("connected");
       client.subscribe("testtopic/#");
     } else {

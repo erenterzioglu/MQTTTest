@@ -1,5 +1,5 @@
-#ifndef SPIFFSUTILS.H
-#define SPIFFSUTILS.H
+#ifndef SPIFFSUTILS_H
+#define SPIFFSUTILS_H
 
 void configFileRead(char* mqtt_server, char* mqtt_port, char*blynk_token);
 void configFileWrite(char* mqtt_server, char* mqtt_port, char*blynk_token);
