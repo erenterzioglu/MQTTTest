@@ -72,6 +72,7 @@ void reconnect() {
     // if (client.connect("ESP8266Client")) {
     if (client.connect("ESP8266Client"/*, mqtt_user, mqtt_pass*/)) {
       Serial.println("connected");
+      client.subscribe("testtopic/#");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -85,4 +86,10 @@ void reconnect() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  if (!client.connected()) {
+    reconnect();
+  }
+  
+  client.loop();
+  delay(5000);
 }
