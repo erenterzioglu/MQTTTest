@@ -1,17 +1,9 @@
- #include <FS.h>                   //this needs to be first, or it all crashes and burns...
- #include<Arduino.h>
-
-
-#include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
-
-//needed for library
-#include <DNSServer.h>
-#include <ESP8266WebServer.h>
-#include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager
-
+#include <FS.h>                   //this needs to be first, or it all crashes and burns...
+#include<Arduino.h>
 #include <ArduinoJson.h>          //https://github.com/bblanchon/ArduinoJson
+#include "SPIFFSUtils.h"
 
-void configFileRead(char* mqtt_server,char* mqtt_port,char* mqtt_user,char* mqtt_pass ){    
+void configFileRead(char* mqtt_server, char* mqtt_port, char*blynk_token){    
  
   if (SPIFFS.begin()) {
     Serial.println("mounted file system");
@@ -36,22 +28,24 @@ void configFileRead(char* mqtt_server,char* mqtt_port,char* mqtt_user,char* mqtt
           strcpy(mqtt_port, json["mqtt_port"]);
           strcpy(blynk_token, json["blynk_token"]);
 
+        /*
           if(json["ip"]) {
             Serial.println("setting custom ip from config");
-            //static_ip = json["ip"];
+            static_ip = json["ip"];
             strcpy(static_ip, json["ip"]);
             strcpy(static_gw, json["gateway"]);
             strcpy(static_sn, json["subnet"]);
-            //strcat(static_ip, json["ip"]);
-            //static_gw = json["gateway"];
-            //static_sn = json["subnet"];
+            strcat(static_ip, json["ip"]);
+            static_gw = json["gateway"];
+            static_sn = json["subnet"];
             Serial.println(static_ip);
-/*            Serial.println("converting ip");
+            Serial.println("converting ip");
             IPAddress ip = ipFromCharArray(static_ip);
-            Serial.println(ip);*/
+            Serial.println(ip);
           } else {
             Serial.println("no custom ip in config");
-          }
+          }*/
+
         } else {
           Serial.println("failed to load json config");
         }
@@ -60,5 +54,30 @@ void configFileRead(char* mqtt_server,char* mqtt_port,char* mqtt_user,char* mqtt
   } else {
     Serial.println("failed to mount FS");
   }
-  //end read
+}
+
+void configFileWrite(char* mqtt_server, char* mqtt_port, char*blynk_token ){
+    Serial.println("saving config");
+    DynamicJsonBuffer jsonBuffer;
+    JsonObject& json = jsonBuffer.createObject();
+    json["mqtt_server"] = mqtt_server;
+    json["mqtt_port"] = mqtt_port;
+    json["blynk_token"] = blynk_token;
+
+    //json["ip"] = WiFi.localIP().toString();
+    //json["gateway"] = WiFi.gatewayIP().toString();
+    //json["subnet"] = WiFi.subnetMask().toString();
+    
+    // SPIFFS control might be need 
+    File configFile = SPIFFS.open("/config.json", "w");
+    if (!configFile) {
+      Serial.println("failed to open config file for writing");
+    }
+
+    json.prettyPrintTo(Serial);
+    json.printTo(configFile);
+    configFile.close();
+    //end save
+  
+
 }
