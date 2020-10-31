@@ -1,10 +1,11 @@
 #include <Arduino.h>
-#include<WifiManager.h>
+#include <WifiManager.h>
 #include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
 #include <DNSServer.h>
-#include <ESP8266WebServer.h>
 #include <PubSubClient.h>
 #include "SPIFFSUtils.h"
+#include "ServerUtils.h"
+#include <ESP8266mDNS.h>
 
 bool shouldSaveConfig = false;
 
@@ -14,6 +15,7 @@ char blynk_token[33] = " ";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
+ESP8266WebServer webServer;
 
 void reconnect();
 void callback(char* topic, byte* payload, unsigned int length);
@@ -50,6 +52,27 @@ void setup() {
     ESP.reset();
     delay(1000);
   } 
+  
+  //if you get here you have connected to the WiFi
+  Serial.println("connected...");
+ 
+  if (!MDNS.begin("esp8266")) {
+    Serial.println("Error setting up MDNS responder!");
+    while (1) {
+      delay(1000);
+    }
+  }
+  Serial.println("mDNS responder started");
+  /*
+  webServer.on("/", handle_OnConnect);
+  webServer.on("/led1on", handle_led1on);
+  webServer.on("/led1off", handle_led1off);
+  webServer.on("/led2on", handle_led2on);
+  webServer.on("/led2off", handle_led2off);
+  webServer.onNotFound(handle_NotFound);
+  
+  webServer.begin();
+  Serial.println("HTTP server started");*/
 
   strcpy(mqtt_server, custom_mqtt_server.getValue());
   strcpy(mqtt_port, custom_mqtt_port.getValue());
@@ -57,11 +80,7 @@ void setup() {
 
   configFileWrite(mqtt_server,mqtt_port,blynk_token);
 
-  //if you get here you have connected to the WiFi
-  Serial.println("connected...");
   
-  //  client.setServer(mqtt_server, 12025);
-  //const uint16_t mqtt_port_x = 12025; 
   client.setServer(mqtt_server, atoi(mqtt_port));
   client.setCallback(callback);
 }
@@ -103,5 +122,6 @@ void loop() {
   }
   
   client.loop();
+  webServer.handleClient();
   delay(5000);
 }
