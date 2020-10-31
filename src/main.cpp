@@ -7,7 +7,7 @@
 #include "ServerUtils.h"
 #include <ESP8266mDNS.h>
 
-bool shouldSaveConfig = false;
+bool shouldSaveConfig = false; // May be delete 
 
 char mqtt_server[40] = "broker.emqx.io" ;
 char mqtt_port[6] = "1883";
@@ -15,12 +15,14 @@ char blynk_token[33] = " ";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
-ESP8266WebServer webServer;
+
+ESP8266WebServer webServer; // This externed value may be arbitary 
 
 void reconnect();
 void callback(char* topic, byte* payload, unsigned int length);
 
 //callback notifying us of the need to save config
+// May be deleted too 
 void saveConfigCallback () {
   Serial.println("Should save config");
   shouldSaveConfig = true;
@@ -63,23 +65,14 @@ void setup() {
     }
   }
   Serial.println("mDNS responder started");
-  /*
-  webServer.on("/", handle_OnConnect);
-  webServer.on("/led1on", handle_led1on);
-  webServer.on("/led1off", handle_led1off);
-  webServer.on("/led2on", handle_led2on);
-  webServer.on("/led2off", handle_led2off);
-  webServer.onNotFound(handle_NotFound);
-  
-  webServer.begin();
-  Serial.println("HTTP server started");*/
+ 
+  configWebServer();
 
   strcpy(mqtt_server, custom_mqtt_server.getValue());
   strcpy(mqtt_port, custom_mqtt_port.getValue());
   strcpy(blynk_token, custom_blynk_token.getValue());
 
   configFileWrite(mqtt_server,mqtt_port,blynk_token);
-
   
   client.setServer(mqtt_server, atoi(mqtt_port));
   client.setCallback(callback);
