@@ -15,11 +15,6 @@ char topic_name[33] = "testtopic/#";
 
 #define BUILTIN_LED 2
 
-/*
-char mqtt_server[40] = "test.mosquitto.org/" ;
-char mqtt_port[6] = "1883";
-char topic_name[33] = "#";
-*/
 WiFiClient espClient;
 PubSubClient client(espClient);
 
