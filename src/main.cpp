@@ -16,7 +16,7 @@ char blynk_token[33] = " ";
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-ESP8266WebServer webServer; // This externed value may be arbitary 
+//ESP8266WebServer webServer; // This externed value may be arbitary 
 
 void reconnect();
 void callback(char* topic, byte* payload, unsigned int length);
@@ -86,6 +86,13 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.print((char)payload[i]);
   }
   Serial.println();
+  /*
+  if(messages.size() > MESSAGE_BUFFER_SIZE){
+    while(messages.size() > MESSAGE_BUFFER_SIZE){
+      
+    }
+  }
+  */
 }
 
 void reconnect() {

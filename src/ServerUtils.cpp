@@ -1,11 +1,15 @@
 #include "ServerUtils.h"
 #include <Arduino.h>
 #include <ESP8266WebServer.h>
-#include <iostream>
+//#include <iostream>
 
 ESP8266WebServer webServer(80);
-std::vector<String> messages;
+std::vector<std::string> messages;
 
+void handle_OnConnect();
+void handle_led1on();
+void handle_NotFound();
+String DashboardPage();
 
 void configWebServer(){
      
@@ -42,9 +46,9 @@ String DashboardPage(){
     dashboardPage += "<p>Incoming MQTT Messages:</p>\n";
     dashboardPage += "<textarea name=\"name\" rows=\"8\" cols=\"80\">\n";
 
-    for(String &tmpMessage: messages){
-        dashboardPage += tmpMessage; // Messages will be added 
-        dashboardPage += "\n"; // Messages will be added 
+    for(std::string &tmpMessage: messages){
+        dashboardPage += tmpMessage.c_str();
+        dashboardPage += "\n"; 
     }
 
     dashboardPage += "</textarea>\n";
@@ -63,4 +67,28 @@ String DashboardPage(){
 </html>
     */
    return dashboardPage;
+}
+
+String SettingsPage(){
+    String settingsPage;
+
+    settingsPage = "<!DOCTYPE html>\n";
+    settingsPage += " \n";
+
+
+/*
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Settings</title>
+  </head>
+  <body>
+    <button type="button" name="Forgot_Broker">Forgot Broker</button>
+    <p></p>
+    <button type="button" name="Restore">Restore Device</button>
+  </body>
+</html>
+*/
+    return settingsPage;
 }
