@@ -3,7 +3,7 @@
 #include <ArduinoJson.h>          //https://github.com/bblanchon/ArduinoJson
 #include "SPIFFSUtils.h"
 
-void configFileRead(char* mqtt_server, char* mqtt_port, char*blynk_token){    
+void configFileRead(char* mqtt_server, char* mqtt_port, char*topic_name){    
  
   if (SPIFFS.begin()) {
     Serial.println("mounted file system");
@@ -26,7 +26,7 @@ void configFileRead(char* mqtt_server, char* mqtt_port, char*blynk_token){
 
           strcpy(mqtt_server, json["mqtt_server"]);
           strcpy(mqtt_port, json["mqtt_port"]);
-          strcpy(blynk_token, json["blynk_token"]);
+          strcpy(topic_name, json["topic_name"]);
 
         /*
           if(json["ip"]) {
@@ -56,13 +56,13 @@ void configFileRead(char* mqtt_server, char* mqtt_port, char*blynk_token){
   }
 }
 
-void configFileWrite(char* mqtt_server, char* mqtt_port, char*blynk_token ){
+void configFileWrite(char* mqtt_server, char* mqtt_port, char*topic_name ){
     Serial.println("saving config");
     DynamicJsonBuffer jsonBuffer;
     JsonObject& json = jsonBuffer.createObject();
     json["mqtt_server"] = mqtt_server;
     json["mqtt_port"] = mqtt_port;
-    json["blynk_token"] = blynk_token;
+    json["topic_name"] = topic_name;
 
     //json["ip"] = WiFi.localIP().toString();
     //json["gateway"] = WiFi.gatewayIP().toString();

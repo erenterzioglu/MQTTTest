@@ -11,8 +11,15 @@ bool shouldSaveConfig = false; // May be delete
 
 char mqtt_server[40] = "broker.emqx.io" ;
 char mqtt_port[6] = "1883";
-char blynk_token[33] = " ";
+char topic_name[33] = "testtopic/#";
 
+#define BUILTIN_LED 2
+
+/*
+char mqtt_server[40] = "test.mosquitto.org/" ;
+char mqtt_port[6] = "1883";
+char topic_name[33] = "#";
+*/
 WiFiClient espClient;
 PubSubClient client(espClient);
 
@@ -29,10 +36,14 @@ void saveConfigCallback () {
 }
 
 void setup() {
+  
   Serial.begin(9600);
+  pinMode(BUILTIN_LED,OUTPUT);
+  digitalWrite(BUILTIN_LED,HIGH);
+
   WiFiManager wifiManager;
 
-  //configFileRead(mqtt_server, mqtt_port, blynk_token);
+  //configFileRead(mqtt_server, mqtt_port, topic_name);
   // Uncomment and run it once, if you want to erase all the stored information
   //wifiManager.resetSettings();
   wifiManager.setConfigPortalTimeout(180);
@@ -42,11 +53,11 @@ void setup() {
 
   WiFiManagerParameter custom_mqtt_server("server", "mqtt server", mqtt_server, 40);
   WiFiManagerParameter custom_mqtt_port("port", "mqtt port", mqtt_port, 5);
-  WiFiManagerParameter custom_blynk_token("blynk", "blynk token", blynk_token, 34);
+  WiFiManagerParameter custom_topic_name("topic", "topic name", topic_name, 34);
 
   wifiManager.addParameter(&custom_mqtt_server);
   wifiManager.addParameter(&custom_mqtt_port);
-  wifiManager.addParameter(&custom_blynk_token);
+  wifiManager.addParameter(&custom_topic_name);
 
   if(!wifiManager.autoConnect("ESP-8266", "123456")) {
     Serial.println("failed to connect and hit timeout");
@@ -67,32 +78,33 @@ void setup() {
   Serial.println("mDNS responder started");
  
   configWebServer();
+  
+  MDNS.addService("http", "tcp", 80);
 
   strcpy(mqtt_server, custom_mqtt_server.getValue());
   strcpy(mqtt_port, custom_mqtt_port.getValue());
-  strcpy(blynk_token, custom_blynk_token.getValue());
+  strcpy(topic_name, custom_topic_name.getValue());
 
-  configFileWrite(mqtt_server,mqtt_port,blynk_token);
+  configFileWrite(mqtt_server,mqtt_port,topic_name);
   
   client.setServer(mqtt_server, atoi(mqtt_port));
   client.setCallback(callback);
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
+  //digitalWrite(BUILTIN_LED,LOW);
+  std::string str;
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
   for (int i=0;i<length;i++) {
     Serial.print((char)payload[i]);
+    str[i] = (char)payload[i];
   }
   Serial.println();
-  /*
-  if(messages.size() > MESSAGE_BUFFER_SIZE){
-    while(messages.size() > MESSAGE_BUFFER_SIZE){
-      
-    }
-  }
-  */
+  //messages[tail] = str;
+  tail++;
+  //digitalWrite(BUILTIN_LED,HIGH);
 }
 
 void reconnect() {
@@ -103,7 +115,8 @@ void reconnect() {
    
     if (client.connect("ESP8266Client")) {
       Serial.println("connected");
-      client.subscribe("testtopic/#");
+      //client.subscribe("testtopic/#");
+      client.subscribe(topic_name);
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -120,8 +133,10 @@ void loop() {
   if (!client.connected()) {
     reconnect();
   }
-  
+  MDNS.update();
+
   client.loop();
   webServer.handleClient();
-  delay(5000);
+  delay(400);
+  //erial.print("in loop");
 }

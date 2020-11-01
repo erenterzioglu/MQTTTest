@@ -6,8 +6,9 @@
 #define MESSAGE_BUFFER_SIZE 20
 
 extern ESP8266WebServer webServer;
-extern std::vector<std::string> messages;
-
+extern std::string messages[];
+extern int head;
+extern int tail;
 void configWebServer();
 
 #endif

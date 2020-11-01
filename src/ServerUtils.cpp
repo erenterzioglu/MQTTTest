@@ -1,10 +1,14 @@
 #include "ServerUtils.h"
 #include <Arduino.h>
 #include <ESP8266WebServer.h>
-//#include <iostream>
+
+#define MESSAGE_BUFFER_SIZE 20
+
+std::string messages[MESSAGE_BUFFER_SIZE];
+int head=0;
+int tail=0;
 
 ESP8266WebServer webServer(80);
-std::vector<std::string> messages;
 
 void handle_OnConnect();
 void handle_led1on();
@@ -40,14 +44,15 @@ String DashboardPage(){
     
     dashboardPage = "<!DOCTYPE html>\n";
     dashboardPage += "<html lang=\"en\" dir=\"ltr\">\n";
-    dashboardPage += "<head> <meta charset=\"utf-8\"><title>MQTT Dashboard</title></head>\n";
+    dashboardPage += "<head> <meta http-equiv=\"refresh\" content=\"50\" charset=\"utf-8\"><title>MQTT Dashboard</title></head>\n";
     dashboardPage += "<body>\n";
     dashboardPage += "<h1>MQTT Dashboard <button type=\"button\" name=\"SettingsButton\">Settings</button></h1>\n";
     dashboardPage += "<p>Incoming MQTT Messages:</p>\n";
     dashboardPage += "<textarea name=\"name\" rows=\"8\" cols=\"80\">\n";
 
-    for(std::string &tmpMessage: messages){
-        dashboardPage += tmpMessage.c_str();
+    
+    for(int i=0; i< 20; i++){
+        dashboardPage += messages[i].c_str();
         dashboardPage += "\n"; 
     }
 
