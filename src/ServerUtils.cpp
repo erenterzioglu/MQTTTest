@@ -1,12 +1,14 @@
 #include "ServerUtils.h"
 #include <Arduino.h>
 #include <ESP8266WebServer.h>
+#include "SPIFFSUtils.h"
 
 #define MESSAGE_BUFFER_SIZE 20
 
 std::string messages[MESSAGE_BUFFER_SIZE];
 int head=0;
 int tail=0;
+bool resetWifiFlag =false;
 
 ESP8266WebServer webServer(80);
 
@@ -16,11 +18,19 @@ void handle_NotFound();
 String DashboardPage();
 String SettingsPage();
 void settings();
+void resetBroker();
+void resetWifi();
+void changeBroker();
+bool anyMissingArgument();
 
 void configWebServer(){
      
   webServer.on("/", handle_OnConnect);
   webServer.on("/settings", settings);
+  webServer.on("/resetWifi", resetWifi);
+  webServer.on("/resetBroker", resetBroker);
+  webServer.on("/changeBroker", changeBroker);
+
   webServer.onNotFound(handle_NotFound);
   
   webServer.begin();
@@ -78,19 +88,21 @@ String DashboardPage(){
 String SettingsPage(){
     String settingsPage;
 
-    settingsPage = "<!DOCTYPE html>\n";
+    settingsPage =  "<!DOCTYPE html>\n";
     settingsPage += "<head><meta charset=\"utf-8\"><title>Settings</title></head> \n";
-    settingsPage += "<body><button type=\"button\" name=\"Forgot_Broker\">Forgot Broker</button><p></p> \n";
-    settingsPage += "<button type=\"button\" name=\"Restore\">Restore Device</button></body> \n";
-    settingsPage += " </body></html> \n";
-    settingsPage += " \n";
-    settingsPage += " \n";
-    settingsPage += " \n";
-    settingsPage += " \n";
-    settingsPage += " \n";
-    settingsPage += " \n";
+    settingsPage += "<body>\n";
+    settingsPage += "<a href=\"/resetBroker\"> <button type=\"button\" name=\"Forgot_Broker\">Forgot Broker</button></a>\n";
+    settingsPage += "<p></p> \n";
+    settingsPage += "<a href=\"/resetWifi\"><button type=\"button\" name=\"Restore\">Reset WiFi </button></body></a> \n";
+    settingsPage += "<p></p> \n";
 
-
+    settingsPage += "<form action=\"/changeBroker\" method=\"POST\"><p>\n";
+    settingsPage += "Broker Address:   <br><input type=\"text\" name=\"brokerAddress\"><br>\n";
+    settingsPage += "Port Number:      <br><input type=\"text\" name=\"portNumber\">   <br>\n";
+    settingsPage += "Topic Name:       <br><input type=\"text\" name=\"topicName\">    </p>\n";
+    settingsPage += "<button type=\"submit\" name=\"button\">Add MQTT Configration</button>\n";
+    settingsPage += "</form></body></html> \n";
+   
 /*
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -106,4 +118,41 @@ String SettingsPage(){
 </html>
 */
     return settingsPage;
+}
+
+void resetWifi(){
+  Serial.println("Wifi configrations deleting...");
+  resetWifiFlag=true;
+}
+// brokerAddress portNumber topicName
+void resetBroker(){
+  Serial.println("Broker configration deleting...");
+  configFileWrite("","","");
+  Serial.println("Broker configration deleted...");
+  ESP.reset();
+}
+
+void changeBroker(){
+  Serial.println(webServer.args());
+    Serial.print(webServer.arg("brokerAddress"));
+        Serial.print(webServer.arg("portNumber"));
+    Serial.print(webServer.arg("topicName"));
+
+  if(!anyMissingArgument()){
+    Serial.print(webServer.arg("brokerAddress"));
+    Serial.print(webServer.arg("portNumber"));
+    Serial.print(webServer.arg("topicName"));
+
+    configFileWrite((char*)webServer.arg("brokerAddress").c_str(),(char*)webServer.arg("portNumber").c_str(),(char*)webServer.arg("topicName").c_str());
+    Serial.flush();
+    ESP.reset();
+  }
+}
+
+bool anyMissingArgument(){
+  if(webServer.hasArg("brokerAddress") && webServer.hasArg("portNumber") && webServer.hasArg("topicName")){
+    return false;
+  }
+  Serial.println("Some arguments are missing for connecting to the MQTT server...");
+  return true;
 }

@@ -78,6 +78,6 @@ void configFileWrite(char* mqtt_server, char* mqtt_port, char*topic_name ){
     json.printTo(configFile);
     configFile.close();
     //end save
-  
+    Serial.println("configFileWrite function ended");
 
 }

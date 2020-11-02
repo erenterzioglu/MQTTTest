@@ -7,7 +7,6 @@
 #include "ServerUtils.h"
 #include <ESP8266mDNS.h>
 
-bool shouldSaveConfig = false; // May be delete 
 
 /*
 char mqtt_server[40] = "broker.emqx.io" ;
@@ -19,31 +18,22 @@ char mqtt_server[40] = "" ;
 char mqtt_port[6] = "";
 char topic_name[33] = "";
 
-
 #define BUILTIN_LED 2
 
 WiFiClient espClient;
 PubSubClient client(espClient);
+WiFiManager wifiManager;
 
 //ESP8266WebServer webServer; // This externed value may be arbitary 
 
 void reconnect();
 void callback(char* topic, byte* payload, unsigned int length);
 
-//callback notifying us of the need to save config
-// May be deleted too 
-void saveConfigCallback () {
-  Serial.println("Should save config");
-  shouldSaveConfig = true;
-}
-
 void setup() {
   
   Serial.begin(9600);
   pinMode(BUILTIN_LED,OUTPUT);
   digitalWrite(BUILTIN_LED,HIGH);
-
-  WiFiManager wifiManager;
 
   configFileRead(mqtt_server, mqtt_port, topic_name);
   // Uncomment and run it once, if you want to erase all the stored information
@@ -107,11 +97,13 @@ void callback(char* topic, byte* payload, unsigned int length) {
   //messages[tail] = str;
   tail++;
   //digitalWrite(BUILTIN_LED,HIGH);
+  delay(10);
 }
 
 void reconnect() {
+  unsigned long localTimeout = millis();
   // Loop until we're reconnected
-  while (!client.connected()) {
+  while ((!client.connected()) && (millis()-localTimeout < 5000)) {
     Serial.print("Attempting MQTT connection...");
     // Attempt to connect
    
@@ -124,21 +116,33 @@ void reconnect() {
       Serial.print(client.state());
       Serial.println(" try again in 5 seconds");
       // Wait 5 seconds before retrying
-      delay(5000);
+      delay(10);
     }
   }
 }
 
-
+unsigned long cmpTime = millis();
 void loop() {
   // put your main code here, to run repeatedly:
-  if (!client.connected()) {
+  if ((!client.connected()) && millis()-cmpTime > 5000) {
     reconnect();
+    cmpTime = millis();
   }
+
   MDNS.update();
 
-  client.loop();
+  if(client.connected()){
+    client.loop();
+    cmpTime = millis();
+  }
+
   webServer.handleClient();
-  delay(400);
-  //erial.print("in loop");
+  delay(10);
+  // Serial.print("in loop");
+  if(resetWifiFlag){
+    wifiManager.resetSettings();
+    resetWifiFlag = false;
+    ESP.reset();
+  }
+
 }

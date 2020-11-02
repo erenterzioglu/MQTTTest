@@ -9,6 +9,8 @@ extern ESP8266WebServer webServer;
 extern std::string messages[];
 extern int head;
 extern int tail;
+extern bool resetWifiFlag;
 void configWebServer();
+bool anyMissingArgument();
 
 #endif
