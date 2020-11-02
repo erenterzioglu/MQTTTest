@@ -9,9 +9,16 @@
 
 bool shouldSaveConfig = false; // May be delete 
 
+/*
 char mqtt_server[40] = "broker.emqx.io" ;
 char mqtt_port[6] = "1883";
 char topic_name[33] = "testtopic/#";
+*/
+
+char mqtt_server[40] = "" ;
+char mqtt_port[6] = "";
+char topic_name[33] = "";
+
 
 #define BUILTIN_LED 2
 
@@ -38,13 +45,13 @@ void setup() {
 
   WiFiManager wifiManager;
 
-  //configFileRead(mqtt_server, mqtt_port, topic_name);
+  configFileRead(mqtt_server, mqtt_port, topic_name);
   // Uncomment and run it once, if you want to erase all the stored information
   //wifiManager.resetSettings();
   wifiManager.setConfigPortalTimeout(180);
       
   //set config save notify callback
-  wifiManager.setSaveConfigCallback(saveConfigCallback);
+  //wifiManager.setSaveConfigCallback(saveConfigCallback);
 
   WiFiManagerParameter custom_mqtt_server("server", "mqtt server", mqtt_server, 40);
   WiFiManagerParameter custom_mqtt_port("port", "mqtt port", mqtt_port, 5);

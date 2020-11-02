@@ -14,11 +14,13 @@ void handle_OnConnect();
 void handle_led1on();
 void handle_NotFound();
 String DashboardPage();
+String SettingsPage();
+void settings();
 
 void configWebServer(){
      
   webServer.on("/", handle_OnConnect);
-  webServer.on("/led1on", handle_led1on);
+  webServer.on("/settings", settings);
   webServer.onNotFound(handle_NotFound);
   
   webServer.begin();
@@ -26,13 +28,13 @@ void configWebServer(){
 }
 
 void handle_OnConnect() {
-  Serial.println("GPIO7 Status: OFF | GPIO6 Status: OFF");
+  Serial.println("Connection..");
   webServer.send(200, "text/html", DashboardPage()); 
 }
 
-void handle_led1on() {
-  Serial.println("GPIO7 Status: ON");
-  webServer.send(200, "text/html", DashboardPage()); 
+void settings() {
+  Serial.println("Settings");
+  webServer.send(200, "text/html", SettingsPage()); 
 }
 
 void handle_NotFound(){
@@ -46,11 +48,10 @@ String DashboardPage(){
     dashboardPage += "<html lang=\"en\" dir=\"ltr\">\n";
     dashboardPage += "<head> <meta http-equiv=\"refresh\" content=\"50\" charset=\"utf-8\"><title>MQTT Dashboard</title></head>\n";
     dashboardPage += "<body>\n";
-    dashboardPage += "<h1>MQTT Dashboard <button type=\"button\" name=\"SettingsButton\">Settings</button></h1>\n";
+    dashboardPage += "<h1>MQTT Dashboard <a href=\"/settings\"><button type=\"button\" name=\"SettingsButton\">Settings</button></a></h1>\n";
     dashboardPage += "<p>Incoming MQTT Messages:</p>\n";
     dashboardPage += "<textarea name=\"name\" rows=\"8\" cols=\"80\">\n";
 
-    
     for(int i=0; i< 20; i++){
         dashboardPage += messages[i].c_str();
         dashboardPage += "\n"; 
@@ -78,6 +79,15 @@ String SettingsPage(){
     String settingsPage;
 
     settingsPage = "<!DOCTYPE html>\n";
+    settingsPage += "<head><meta charset=\"utf-8\"><title>Settings</title></head> \n";
+    settingsPage += "<body><button type=\"button\" name=\"Forgot_Broker\">Forgot Broker</button><p></p> \n";
+    settingsPage += "<button type=\"button\" name=\"Restore\">Restore Device</button></body> \n";
+    settingsPage += " </body></html> \n";
+    settingsPage += " \n";
+    settingsPage += " \n";
+    settingsPage += " \n";
+    settingsPage += " \n";
+    settingsPage += " \n";
     settingsPage += " \n";
 
 
