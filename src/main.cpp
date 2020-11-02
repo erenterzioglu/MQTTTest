@@ -124,7 +124,7 @@ void reconnect() {
 unsigned long cmpTime = millis();
 void loop() {
   // put your main code here, to run repeatedly:
-  if ((!client.connected()) && millis()-cmpTime > 5000) {
+  if ((!client.connected()) && (millis()-cmpTime > 5000)) {
     reconnect();
     cmpTime = millis();
   }
