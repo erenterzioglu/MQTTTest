@@ -105,17 +105,18 @@ String SettingsPage(){
    
 /*
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Settings</title>
-  </head>
-  <body>
-    <button type="button" name="Forgot_Broker">Forgot Broker</button>
-    <p></p>
-    <button type="button" name="Restore">Restore Device</button>
-  </body>
-</html>
+<head><meta charset="  utf-8"  ><title>Settings</title></head>
+<body>
+<a href="  /resetBroker"  > <button type="  button"   name="  Forgot_Broker"  >Forgot Broker</button></a>
+<p></p>
+<a href="  /resetWifi"  ><button type="  button"   name="  Restore"  >Reset WiFi </button></body></a>
+<p></p>
+<form action="  /changeBroker"   method="  POST"  ><p>
+Broker Address:   <br><input type="  text"   name="  brokerAddress"  ><br>
+Port Number:      <br><input type="  text"   name="  portNumber"  >   <br>
+Topic Name:       <br><input type="  text"   name="  topicName"  >    </p>
+<button type="  submit"   name="  button"  >Add MQTT Configration</button>
+</form></body></html>
 */
     return settingsPage;
 }

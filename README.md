@@ -1,7 +1,10 @@
 # MQTTTEST
 
 This project is an test dashboard for MQTT projects. Project developed with
-an ESP8266 microcontroller and Arduino libray choosed for development.  
+an ESP8266 microcontroller and Arduino libray choosed for development. 
+
+![Dashboard](/images/Dashboard.png)
+![Settings](/images/Settings.png)
 
 ## Features
 * Wi-Fi Configration
@@ -22,6 +25,8 @@ All of the above can be handled without changing the code
 , ESP8266WiFi.h and so on
 
 ## How To Run This Project
+#### Note: All this steps at your own risk 
+
 Project development in PlatformIO. After downloading project code open in
 PlatformIO enviroment and check Espressif Platform extension has been installed.
 If you faced issues, firstly please check libraries has been installed correctly
