@@ -30,7 +30,7 @@ All of the above can be handled without changing the code
 , ESP8266WiFi.h and so on
 
 ## How To Run This Project
-#### Note: All this steps at your own risk 
+#### Note: All these steps at your own risk 
 
 Project development in PlatformIO. After downloading project code open in
 PlatformIO enviroment and check Espressif Platform extension has been installed.
