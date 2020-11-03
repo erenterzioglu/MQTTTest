@@ -10,7 +10,8 @@ an ESP8266 microcontroller and Arduino libray choosed for development.
 * Reset Wi-Fi
 * Change Broker
 * Keep changes on reboot
-* All of the above can be handled without changing the code
+
+All of the above can be handled without changing the code
 
 ## Used Libaries
 * [PubSubClient](https://github.com/knolleary/pubsubclient)
