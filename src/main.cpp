@@ -7,7 +7,6 @@
 #include "ServerUtils.h"
 #include <ESP8266mDNS.h>
 
-
 /*
 char mqtt_server[40] = "broker.emqx.io" ;
 char mqtt_port[6] = "1883";
