@@ -3,7 +3,12 @@
 This project is an test dashboard for MQTT projects. Project developed with
 an ESP8266 microcontroller and Arduino libray choosed for development. 
 
+Dashboard Page:
+
 ![Dashboard](/images/Dashboard.png)
+
+Settings Page:
+
 ![Settings](/images/Settings.png)
 
 ## Features
